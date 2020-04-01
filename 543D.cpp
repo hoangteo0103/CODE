@@ -54,7 +54,7 @@ void Solve()
 }
 int main()
 {
-    freopen("trash.inp","r",stdin);
+    //freopen("trash.inp","r",stdin);
     In();
     Solve();
 }
