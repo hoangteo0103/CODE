@@ -1,0 +1,84 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+const int Mod =1e9+7;
+const int N =400;
+int gt[N],n,dp[N][N],a[N],sub[N],sum[N],s=0;
+bool vs[N];
+int mul(int a,int b)
+{
+    return a*b%Mod;
+}
+bool square(int x)
+{
+    return ((int)sqrt(x)*(int)sqrt(x)) ==x;
+}
+int Pow(int a, int b)
+{
+    if(b==0) return 1;
+    int  tmp=Pow(a,b/2);
+    tmp=tmp*tmp%Mod;
+    if(b%2==0) return tmp;
+    else return tmp*a%Mod;
+}
+int C(int k,int n)
+{
+    int nu=gt[n];
+    int cc=(gt[n-k]*gt[k])%Mod;
+    cc=Pow(cc,Mod-2);
+    cc=(cc*nu)%Mod;
+    return cc;
+}
+void In()
+{
+    cin>>n;
+    for(int i=1;i<=n;i++)
+        cin>>a[i];
+    memset(vs,false,sizeof(vs));
+    memset(sub,0,sizeof(sub));
+}
+void Prepare()
+{
+    gt[0]=1;
+    for(int i=1;i<=n;i++)
+        gt[i]=gt[i-1]*i%Mod;
+    s=0;
+    for(int i=1;i<=n;i++)
+    {
+        if(vs[i]) continue;
+        vs[i]=true;
+        sub[++s]=1;
+        for(int j=i+1;j<=n;j++)
+        if(square(a[i]*a[j]))
+        {
+            sub[s]++;
+            vs[j]=true;
+        }
+    }
+    sum[0]=0;
+    for(int i=1;i<=s;i++)
+    sum[i]=sum[i-1]+sub[i];
+}
+void Solve()
+{
+    memset(dp,0,sizeof(dp));
+    dp[1][sub[1]-1]=gt[sub[1]];
+    for(int i=1;i<s;i++)
+    for(int j=0;j<=n;j++)
+    if(dp[i][j]>0)
+        {
+            for(int group=1;group<=min(sum[i]+1,sub[i+1]);group++)
+                for(int k=0;k<=min(j,group);k++)
+            {       //cout<<dp[i][j]<<' '<<C(k,j)<<' '<<gt[sub[i+1]]<<' '<<C(group-1,sub[i+1])<<' '<<C(group-k,sum[i]-j+1)<<endl;
+                    dp[i+1][j-k+sub[i+1]-group]=(dp[i+1][j-k+sub[i+1]-group] +(dp[i][j]*C(k,j)%Mod *C(group-k,sum[i]-j+1)%Mod*C(group-1,sub[i+1]-1)%Mod*gt[sub[i+1]]%Mod))%Mod;
+            }
+        }
+    cout<<dp[s][0];
+}
+#undef int
+int main()
+{   freopen("trash.inp","r",stdin);
+    In();
+    Prepare();
+    Solve();
+}
